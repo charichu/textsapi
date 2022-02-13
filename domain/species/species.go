@@ -2,6 +2,7 @@ package species
 
 type Specie struct {
 	Id                    string                 `json:"id"`
+	Name                  string                 `json:"name"`
 	ApValue               int                    `json:"ap_value"`
 	HealthBase            int                    `json:"health_base"`
 	SpiritBase            int                    `json:"spirit_base"`

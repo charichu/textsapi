@@ -1,10 +1,13 @@
 package controllers
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/charichu/oauthgo/oauth"
 	"github.com/charichu/spekulproapi/domain/species"
 	"github.com/charichu/spekulproapi/services"
+	"github.com/charichu/utilsgo/http_utils"
+	"github.com/charichu/utilsgo/rest_errors"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -23,17 +26,32 @@ type speciesController struct{}
 
 func (c *speciesController) Create(w http.ResponseWriter, r *http.Request) {
 	if err := oauth.AuthenticateRequest(r); err != nil {
-		// TODO return error
+		http_utils.RespondError(w, err)
 		return
 	}
-	var specie species.Specie
-	result, err := services.SpeciesService.Create(specie)
+
+	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		// TODO return error
+		respErr := rest_errors.NewBadRequestError("invalid request body")
+		http_utils.RespondError(w, respErr)
 		return
 	}
-	fmt.Println(result)
-	// TODO return created item with http status 201
+	defer r.Body.Close()
+
+	var specieRequest species.Specie
+	if err := json.Unmarshal(requestBody, &specieRequest); err != nil {
+		respErr := rest_errors.NewBadRequestError("invalid json body")
+		http_utils.RespondError(w, respErr)
+		return
+	}
+	result, createErr := services.SpeciesService.Create(specieRequest)
+	if createErr != nil {
+		http_utils.RespondError(w, createErr)
+		return
+	}
+
+	http_utils.RespondJson(w, http.StatusCreated, result)
+	return
 }
 
 func (c *speciesController) Get(w http.ResponseWriter, r *http.Request) {
