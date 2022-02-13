@@ -7,5 +7,5 @@ import (
 
 func mapUrls() {
 	router.HandleFunc("/ping", controllers.PingController.Ping).Methods(http.MethodGet)
-	router.HandleFunc("/species", controllers.SpeciesController.Create).Methods(http.MethodPost)
+	router.HandleFunc("/ruleTexts", controllers.RuleTextsController.Create).Methods(http.MethodPost)
 }
