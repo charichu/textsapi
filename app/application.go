@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/charichu/spekulproapi/clients/elastic_search"
+	"github.com/charichu/textsapi/clients/elastic_search"
 	"github.com/charichu/utilsgo/logger"
 	"github.com/gorilla/mux"
 	"net/http"
