@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/charichu/textsapi/clients/elastic_search"
-	"github.com/charichu/textsapi/domain/queries"
+	"github.com/charichu/textsapi/src/clients/elastic_search"
+	"github.com/charichu/textsapi/src/domain/queries"
 	"github.com/charichu/utilsgo/rest_errors"
 	"strings"
 )
@@ -47,6 +47,7 @@ func (r *RuleObjectText) Get() rest_errors.RestErr {
 
 func (r *RuleObjectText) Search(query queries.EsQuery) ([]RuleObjectText, rest_errors.RestErr) {
 	result, err := elastic_search.Client.Search(indexRuleTexts, query.Build())
+	fmt.Println(query.Build())
 	if err != nil {
 		return nil, rest_errors.NewInternalServerError("error when trying to search documents", errors.New("db error"))
 	}
@@ -56,6 +57,28 @@ func (r *RuleObjectText) Search(query queries.EsQuery) ([]RuleObjectText, rest_e
 		var result RuleObjectText
 		if err := json.Unmarshal(bytes, &result); err != nil {
 			return nil, rest_errors.NewInternalServerError("error when trying to parse response", errors.New("db error"))
+		}
+		result.Id = hit.Id
+		results[index] = result
+	}
+	if len(results) == 0 {
+		return nil, rest_errors.NewNotFoundError("no result found matching given criteria")
+	}
+
+	return results, nil
+}
+
+func (r *RuleObjectText) MatchSearch(query queries.EsQuery) ([]RuleObjectText, rest_errors.RestErr) {
+	result, err := elastic_search.Client.Search(indexRuleTexts, query.BuildMatchQuery())
+	if err != nil {
+		return nil, rest_errors.NewInternalServerError("error when trying to search documentsby match", errors.New("db error"))
+	}
+	results := make([]RuleObjectText, result.TotalHits())
+	for index, hit := range result.Hits.Hits {
+		bytes, _ := hit.Source.MarshalJSON()
+		var result RuleObjectText
+		if err := json.Unmarshal(bytes, &result); err != nil {
+			return nil, rest_errors.NewInternalServerError("error when trying to parse response of matching documents", errors.New("db error"))
 		}
 		result.Id = hit.Id
 		results[index] = result

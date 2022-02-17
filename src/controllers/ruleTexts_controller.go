@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/charichu/oauthgo/oauth"
-	"github.com/charichu/textsapi/domain/queries"
-	"github.com/charichu/textsapi/domain/ruleTexts"
-	"github.com/charichu/textsapi/services"
+	"github.com/charichu/textsapi/src/domain/queries"
+	"github.com/charichu/textsapi/src/domain/ruleTexts"
+	"github.com/charichu/textsapi/src/services"
 	"github.com/charichu/utilsgo/http_utils"
 	"github.com/charichu/utilsgo/rest_errors"
 	"github.com/gorilla/mux"
@@ -24,6 +25,7 @@ type ruleTextsControllerInterface interface {
 	Update(http.ResponseWriter, *http.Request)
 	Delete(http.ResponseWriter, *http.Request)
 	Search(http.ResponseWriter, *http.Request)
+	MatchSearch(http.ResponseWriter, *http.Request)
 }
 
 type ruleTextsController struct{}
@@ -89,9 +91,35 @@ func (c *ruleTextsController) Search(w http.ResponseWriter, r *http.Request) {
 	if err := json.Unmarshal(bytes, &query); err != nil {
 		apiErr := rest_errors.NewBadRequestError("invalid json body")
 		http_utils.RespondError(w, apiErr)
+		return
 	}
 
 	results, searchErr := services.RuleTextsService.Search(query)
+	if searchErr != nil {
+		http_utils.RespondError(w, searchErr)
+		return
+	}
+	http_utils.RespondJson(w, http.StatusOK, results)
+}
+
+func (c *ruleTextsController) MatchSearch(w http.ResponseWriter, r *http.Request) {
+	bytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		apiErr := rest_errors.NewBadRequestError("invalid json body")
+		http_utils.RespondError(w, apiErr)
+		return
+	}
+	defer r.Body.Close()
+
+	var query queries.EsQuery
+	if err := json.Unmarshal(bytes, &query); err != nil {
+		fmt.Println(err)
+		apiErr := rest_errors.NewBadRequestError("invalid json body")
+		http_utils.RespondError(w, apiErr)
+		return
+	}
+
+	results, searchErr := services.RuleTextsService.MatchSearch(query)
 	if searchErr != nil {
 		http_utils.RespondError(w, searchErr)
 		return

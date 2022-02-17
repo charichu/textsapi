@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/charichu/textsapi/domain/queries"
-	"github.com/charichu/textsapi/domain/ruleTexts"
+	"github.com/charichu/textsapi/src/domain/queries"
+	"github.com/charichu/textsapi/src/domain/ruleTexts"
 	"github.com/charichu/utilsgo/rest_errors"
 	"net/http"
 )
@@ -17,6 +17,7 @@ type ruleTextsServiceInterface interface {
 	Update(specie ruleTexts.RuleObjectText) (*ruleTexts.RuleObjectText, rest_errors.RestErr)
 	Delete(string) (*ruleTexts.RuleObjectText, rest_errors.RestErr)
 	Search(queries.EsQuery) ([]ruleTexts.RuleObjectText, rest_errors.RestErr)
+	MatchSearch(queries.EsQuery) ([]ruleTexts.RuleObjectText, rest_errors.RestErr)
 }
 
 type ruleTextsService struct{}
@@ -41,6 +42,11 @@ func (s *ruleTextsService) Get(id string) (*ruleTexts.RuleObjectText, rest_error
 func (s *ruleTextsService) Search(query queries.EsQuery) ([]ruleTexts.RuleObjectText, rest_errors.RestErr) {
 	dao := ruleTexts.RuleObjectText{}
 	return dao.Search(query)
+}
+
+func (s *ruleTextsService) MatchSearch(query queries.EsQuery) ([]ruleTexts.RuleObjectText, rest_errors.RestErr) {
+	dao := ruleTexts.RuleObjectText{}
+	return dao.MatchSearch(query)
 }
 
 func (s *ruleTextsService) Update(ruleText ruleTexts.RuleObjectText) (*ruleTexts.RuleObjectText, rest_errors.RestErr) {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/charichu/textsapi/app"
+	"github.com/charichu/textsapi/src/app"
 	"os"
 )
 
