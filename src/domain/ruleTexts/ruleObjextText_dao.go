@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/charichu/textsapi/src/clients/elastic_search"
-	"github.com/charichu/textsapi/src/domain/queries"
+	"github.com/charichu/textsapi/clients/elastic_search"
+	"github.com/charichu/textsapi/domain/queries"
 	"github.com/charichu/utilsgo/rest_errors"
 	"strings"
 )

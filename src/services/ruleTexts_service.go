@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/charichu/textsapi/src/domain/queries"
-	"github.com/charichu/textsapi/src/domain/ruleTexts"
+	"github.com/charichu/textsapi/domain/queries"
+	"github.com/charichu/textsapi/domain/ruleTexts"
 	"github.com/charichu/utilsgo/rest_errors"
 	"net/http"
 )
