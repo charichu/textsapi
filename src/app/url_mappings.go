@@ -1,7 +1,7 @@
 package app
 
 import (
-	controllers2 "github.com/charichu/textsapi/src/controllers"
+	controllers2 "github.com/charichu/textsapi/controllers"
 	"net/http"
 )
 
